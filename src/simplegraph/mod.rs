@@ -34,8 +34,7 @@ use crate::{
     simplegraph::iterators::{SimpleGraphEdgeIterator, SimpleGraphNodeIterator},
     EdgeId, IdType, NodeId,
 };
-use std::{convert::TryInto};
-use std::borrow::Borrow;
+use std::{borrow::Borrow, convert::TryInto};
 
 pub mod iterators;
 
@@ -80,7 +79,9 @@ impl<N, E> Graph<N, E> for SimpleGraph<N, E> {
 
     fn edge(&self, id: EdgeId) -> EdgeRef<E> {
         assert!(self.is_edge_id_valid(id));
-        self.edges[<EdgeId as Into<usize>>::into(id)].borrow().into()
+        self.edges[<EdgeId as Into<usize>>::into(id)]
+            .borrow()
+            .into()
     }
 
     fn edge_start(&self, id: EdgeId) -> NodeId {

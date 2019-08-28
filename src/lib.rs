@@ -95,24 +95,34 @@ impl std::fmt::Debug for EdgeId {
 
 impl From<NodeId> for usize {
     fn from(id: NodeId) -> Self {
-        id.id.try_into().unwrap_or_else(|_| panic!("Node id not compatible with usize: {:?}", id))
+        id.id
+            .try_into()
+            .unwrap_or_else(|_| panic!("Node id not compatible with usize: {:?}", id))
     }
 }
 
 impl From<EdgeId> for usize {
     fn from(id: EdgeId) -> Self {
-        id.id.try_into().unwrap_or_else(|_| panic!("Edge id not compatible with usize: {:?}", id))
+        id.id
+            .try_into()
+            .unwrap_or_else(|_| panic!("Edge id not compatible with usize: {:?}", id))
     }
 }
 
 impl From<usize> for NodeId {
     fn from(id: usize) -> Self {
-        NodeId::new(id.try_into().unwrap_or_else(|_| panic!("Node id not compatible with usize: {:?}", id)))
+        NodeId::new(
+            id.try_into()
+                .unwrap_or_else(|_| panic!("Node id not compatible with usize: {:?}", id)),
+        )
     }
 }
 
 impl From<usize> for EdgeId {
     fn from(id: usize) -> Self {
-        EdgeId::new(id.try_into().unwrap_or_else(|_| panic!("Edge id not compatible with usize: {:?}", id)))
+        EdgeId::new(
+            id.try_into()
+                .unwrap_or_else(|_| panic!("Edge id not compatible with usize: {:?}", id)),
+        )
     }
 }

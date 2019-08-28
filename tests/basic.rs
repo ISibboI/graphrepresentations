@@ -1,6 +1,8 @@
-use graphrepresentations::simplegraph::SimpleGraph;
-use graphrepresentations::graph::{MutableGraph, Node, Edge, Graph, EdgeRef};
-use graphrepresentations::adjacencyarray::AdjacencyArray;
+use graphrepresentations::{
+    adjacencyarray::AdjacencyArray,
+    graph::{Edge, EdgeRef, Graph, MutableGraph, Node},
+    simplegraph::SimpleGraph,
+};
 
 #[test]
 fn test_simple_graph_construction() {
@@ -29,19 +31,19 @@ fn test_adjacency_array_construction_simple_example() {
     let mut simple_graph = SimpleGraph::new();
     let n1 = simple_graph.add_node(Node::new(4));
     let n2 = simple_graph.add_node(Node::new(5));
-    let e1 = simple_graph.add_edge(Edge::new(n1, n2, 'x')).unwrap();
-    let mut adjacency_array = AdjacencyArray::from(&simple_graph);
+    simple_graph.add_edge(Edge::new(n1, n2, 'x')).unwrap();
+    let adjacency_array = AdjacencyArray::from(&simple_graph);
 
-    let mut sg_node_iter = simple_graph.node_iter();
-    let mut aa_node_iter = adjacency_array.node_iter();
+    let sg_node_iter = simple_graph.node_iter();
+    let aa_node_iter = adjacency_array.node_iter();
 
     for (sg, aa) in sg_node_iter.zip(aa_node_iter) {
         assert_eq!(simple_graph.node_data(sg), adjacency_array.node_data(aa));
     }
     assert_eq!(simple_graph.node_len(), adjacency_array.node_len());
 
-    let mut sg_edge_iter = simple_graph.edge_iter();
-    let mut aa_edge_iter = adjacency_array.edge_iter();
+    let sg_edge_iter = simple_graph.edge_iter();
+    let aa_edge_iter = adjacency_array.edge_iter();
 
     for (sg, aa) in sg_edge_iter.zip(aa_edge_iter) {
         assert_eq!(simple_graph.edge(sg), adjacency_array.edge(aa));
