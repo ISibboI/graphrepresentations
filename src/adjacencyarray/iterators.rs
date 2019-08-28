@@ -1,7 +1,6 @@
 //! Iterator types for the `AdjacencyArray`.
 
 use crate::{
-    graph::{Edge, Node},
     EdgeId, IdType, NodeId,
 };
 

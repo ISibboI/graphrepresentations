@@ -9,6 +9,8 @@
 
 #![deny(missing_docs)]
 
+use std::convert::TryInto;
+
 pub mod adjacencyarray;
 pub mod graph;
 pub mod simplegraph;
@@ -24,7 +26,7 @@ pub type IdType = u32;
 /// Identifies a node in a graph.
 ///
 /// This struct cannot be instantiated or modified by the client.
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd)]
 pub struct NodeId {
     id: IdType,
 }
@@ -32,7 +34,7 @@ pub struct NodeId {
 /// Identifies an edge in a graph.
 ///
 /// This struct cannot be instantiated or modified by the client.
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd)]
 pub struct EdgeId {
     id: IdType,
 }
@@ -88,5 +90,29 @@ impl std::fmt::Debug for NodeId {
 impl std::fmt::Debug for EdgeId {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         write!(f, "E{}", self.id)
+    }
+}
+
+impl From<NodeId> for usize {
+    fn from(id: NodeId) -> Self {
+        id.id.try_into().unwrap_or_else(|_| panic!("Node id not compatible with usize: {:?}", id))
+    }
+}
+
+impl From<EdgeId> for usize {
+    fn from(id: EdgeId) -> Self {
+        id.id.try_into().unwrap_or_else(|_| panic!("Edge id not compatible with usize: {:?}", id))
+    }
+}
+
+impl From<usize> for NodeId {
+    fn from(id: usize) -> Self {
+        NodeId::new(id.try_into().unwrap_or_else(|_| panic!("Node id not compatible with usize: {:?}", id)))
+    }
+}
+
+impl From<usize> for EdgeId {
+    fn from(id: usize) -> Self {
+        EdgeId::new(id.try_into().unwrap_or_else(|_| panic!("Edge id not compatible with usize: {:?}", id)))
     }
 }

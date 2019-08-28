@@ -38,6 +38,12 @@ pub trait Graph<N, E> {
 
     /// Returns the end node of the edge identified by the given id.
     fn edge_end(&self, id: EdgeId) -> NodeId;
+
+    /// Returns true if the given `NodeId` refers to a node in this graph.
+    fn is_node_id_valid(&self, id: NodeId) -> bool;
+
+    /// Returns true if the given `EdgeId` refers to an edge in this graph.
+    fn is_edge_id_valid(&self, id: EdgeId) -> bool;
 }
 
 /// A forward navigable graph.
@@ -120,6 +126,11 @@ impl<N> Node<N> {
     pub fn new(data: N) -> Self {
         Self { data }
     }
+
+    /// Returns the data of this node.
+    pub fn data(&self) -> &N {
+        &self.data
+    }
 }
 
 impl<E> Edge<E> {
@@ -136,6 +147,11 @@ impl<E> Edge<E> {
     /// Returns the id of the end node of this edge.
     pub fn end(&self) -> NodeId {
         self.end
+    }
+
+    /// Returns the data of this edge.
+    pub fn data(&self) -> &E {
+        &self.data
     }
 }
 
@@ -160,5 +176,11 @@ impl<'a, E> EdgeRef<'a, E> {
     /// Returns a reference to the data of this edge.
     pub fn data(&self) -> &'a E {
         self.data
+    }
+}
+
+impl<'a, E> From<&'a Edge<E>> for EdgeRef<'a, E> {
+    fn from(edge: &'a Edge<E>) -> Self {
+        EdgeRef::new(edge.start(), edge.end(), edge.data())
     }
 }

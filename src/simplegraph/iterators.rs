@@ -1,7 +1,6 @@
 //! Iterator types for the `SimpleGraph`.
 
 use crate::{
-    graph::{Edge, Node},
     EdgeId, IdType, NodeId,
 };
 

@@ -34,7 +34,8 @@ use crate::{
     simplegraph::iterators::{SimpleGraphEdgeIterator, SimpleGraphNodeIterator},
     EdgeId, IdType, NodeId,
 };
-use std::{convert::TryInto, iter::Map, ops::Range};
+use std::{convert::TryInto};
+use std::borrow::Borrow;
 
 pub mod iterators;
 
@@ -68,23 +69,36 @@ impl<N, E> Graph<N, E> for SimpleGraph<N, E> {
     }
 
     fn node_data(&self, id: NodeId) -> &N {
-        unimplemented!()
+        assert!(self.is_node_id_valid(id));
+        self.nodes[<NodeId as Into<usize>>::into(id)].data()
     }
 
     fn edge_data(&self, id: EdgeId) -> &E {
-        unimplemented!()
+        assert!(self.is_edge_id_valid(id));
+        self.edges[<EdgeId as Into<usize>>::into(id)].data()
     }
 
     fn edge(&self, id: EdgeId) -> EdgeRef<E> {
-        unimplemented!()
+        assert!(self.is_edge_id_valid(id));
+        self.edges[<EdgeId as Into<usize>>::into(id)].borrow().into()
     }
 
     fn edge_start(&self, id: EdgeId) -> NodeId {
-        unimplemented!()
+        assert!(self.is_edge_id_valid(id));
+        self.edges[<EdgeId as Into<usize>>::into(id)].start()
     }
 
     fn edge_end(&self, id: EdgeId) -> NodeId {
-        unimplemented!()
+        assert!(self.is_edge_id_valid(id));
+        self.edges[<EdgeId as Into<usize>>::into(id)].end()
+    }
+
+    fn is_node_id_valid(&self, id: NodeId) -> bool {
+        id.is_valid() && id.id < self.node_len()
+    }
+
+    fn is_edge_id_valid(&self, id: EdgeId) -> bool {
+        id.is_valid() && id.id < self.edge_len()
     }
 }
 
