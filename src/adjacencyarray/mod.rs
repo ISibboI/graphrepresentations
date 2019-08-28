@@ -11,6 +11,7 @@ use crate::{
 };
 use std::convert::TryInto;
 use superslice::Ext;
+use crate::graph::ForwardNavigableGraph;
 
 pub mod iterators;
 
@@ -80,6 +81,19 @@ impl<N, E> Graph<N, E> for AdjacencyArray<N, E> {
 
     fn is_edge_id_valid(&self, id: EdgeId) -> bool {
         id.is_valid() && id.id < self.edge_len()
+    }
+}
+
+impl<'a, N, E> ForwardNavigableGraph<'a, N, E> for AdjacencyArray<N, E> {
+    type OutEdgeIterator = std::iter::Map<std::ops::Range<IdType>, fn(IdType) -> EdgeId>;
+
+    fn out_edges(&self, id: NodeId) -> Self::OutEdgeIterator {
+        assert!(self.is_node_id_valid(id));
+        let node_index = <NodeId as Into<usize>>::into(id);
+        let edge_id_offset = self.first_out[node_index].id;
+        let edge_id_limit = self.first_out[node_index + 1].id;
+        // TODO replace with Range<EdgeId> once Step API is stable (https://github.com/rust-lang/rust/issues/42168)
+        (edge_id_offset..edge_id_limit).map(|id| EdgeId::new(id))
     }
 }
 

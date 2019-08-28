@@ -46,17 +46,26 @@ pub trait Graph<N, E> {
     fn is_edge_id_valid(&self, id: EdgeId) -> bool;
 }
 
-/*pub trait IterableGraph<'a, N, E>: Graph<N, E> {
+// TODO implement as soon as https://github.com/rust-lang/rust/issues/29661 is implemented
+/*/// A graph that supports efficient iterations of nodes and edges.
+///
+/// Accessing nodes or edges by ids one by one might be less efficient than iterating over the nodes and edges directly.
+/// If that is the case, the provided default methods in this trait should be overwritten with the more efficient variant.
+pub trait IterableGraph<'a, N: 'a, E: 'a>: Graph<N, E> {
     /// An iterator over all nodes of a graph.
-    type NodeIterator: Iterator<Item = (NodeId, Node<N>)>;
+    type NodeIterator: Iterator<Item = (NodeId, NodeRef<'a, N>)> = std::iter::Map<<Self as Graph<N, E>>::NodeIdIterator, fn(NodeId) -> (NodeId, NodeRef<'a, N>)>;
     /// An iterator over all edges of a graph.
-    type EdgeIterator: Iterator<Item = (EdgeId, EdgeRef<'a, E>)>;
+    type EdgeIterator: Iterator<Item = (EdgeId, EdgeRef<'a, E>)> = std::iter::Map<<Self as Graph<N, E>>::EdgeIdIterator, fn(EdgeId) -> (EdgeId, EdgeRef<'a, E>)>;
 
     /// Returns an iterator over all nodes in the graph.
-    fn node_iter(&self) -> Self::NodeIterator;
+    fn node_iter(&self) -> Self::NodeIterator {
+        self.node_id_iter().map(|id| (id, NodeRef::new(self.node_data(id))))
+    }
 
     /// Returns an iterator over all edges in the graph.
-    fn edge_iter(&self) -> Self::EdgeIterator;
+    fn edge_iter(&self) -> Self::EdgeIterator {
+        self.edge_id_iter().map(|id| (id, self.edge(id)))
+    }
 }*/
 
 /// A forward navigable graph.
@@ -125,6 +134,13 @@ pub struct Edge<E> {
     data: E,
 }
 
+/// A container for a node.
+/// Is returned by `Graph` when a complete node instance is requested.
+#[derive(Debug, Eq, PartialEq)]
+pub struct NodeRef<'a, N> {
+    data: &'a N,
+}
+
 /// A container for an edge.
 /// Is returned by `Graph` when a complete edge instance is requested.
 #[derive(Debug, Eq, PartialEq)]
@@ -165,6 +181,20 @@ impl<E> Edge<E> {
     /// Returns the data of this edge.
     pub fn data(&self) -> &E {
         &self.data
+    }
+}
+
+impl<'a, N> NodeRef<'a, N> {
+    /// Creates a new node ref with the given node data.
+    /// This method should not be used by the client.
+    // TODO Change to crate visibility once stable
+    pub fn new(data: &'a N) -> Self {
+        Self { data }
+    }
+
+    /// Returns a reference to the data of this node.
+    pub fn data(&self) -> &'a N {
+        self.data
     }
 }
 
