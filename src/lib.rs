@@ -1,4 +1,4 @@
-//! * Graph Representations
+//! # Graph Representations
 //!
 //! This crate provides different representations for graphs, some of which are efficient to use,
 //! and others that are efficient to construct.
