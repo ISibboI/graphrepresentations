@@ -8,7 +8,8 @@
 
  * `SimpleGraph` representation
  * `AdjacencyArray` representation
- * The possibility to convert from `SimpleGraph` to `AdjacencyArray`
+ * Conversion support between `SimpleGraph` to `AdjacencyArray`
+ * Navigation support for `AdjacencyArray`
 
 ### Removed
 
