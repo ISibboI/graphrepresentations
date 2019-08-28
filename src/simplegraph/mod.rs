@@ -20,8 +20,8 @@
 //! let e1 = simple_graph.add_edge(Edge::new(n1, n2, 'c')).unwrap_or_else(|error| panic!("The edge refers nonexistent nodes: {:?}", error));
 //! let adjacency_array = AdjacencyArray::from(&simple_graph);
 //!
-//! let mut node_iter = adjacency_array.node_iter();
-//! let mut edge_iter = adjacency_array.edge_iter();
+//! let mut node_iter = adjacency_array.node_id_iter();
+//! let mut edge_iter = adjacency_array.edge_id_iter();
 //! assert_eq!(node_iter.next(), Some(n1)); // The order of the nodes is guaranteed to stay the same
 //! assert_eq!(node_iter.next(), Some(n2));
 //! assert_eq!(node_iter.next(), None);
@@ -31,7 +31,7 @@
 
 use crate::{
     graph::{Edge, EdgeRef, Graph, GraphModificationError, MutableGraph, Node},
-    simplegraph::iterators::{SimpleGraphEdgeIterator, SimpleGraphNodeIterator},
+    simplegraph::iterators::{SimpleGraphEdgeIdIterator, SimpleGraphNodeIdIterator},
     EdgeId, IdType, NodeId,
 };
 use std::{borrow::Borrow, convert::TryInto};
@@ -48,8 +48,8 @@ pub struct SimpleGraph<N, E> {
 }
 
 impl<N, E> Graph<N, E> for SimpleGraph<N, E> {
-    type NodeIterator = SimpleGraphNodeIterator;
-    type EdgeIterator = SimpleGraphEdgeIterator;
+    type NodeIdIterator = SimpleGraphNodeIdIterator;
+    type EdgeIdIterator = SimpleGraphEdgeIdIterator;
 
     fn node_len(&self) -> IdType {
         self.nodes.len().try_into().expect("Node len out of range")
@@ -59,11 +59,11 @@ impl<N, E> Graph<N, E> for SimpleGraph<N, E> {
         self.edges.len().try_into().expect("Edge len out of range")
     }
 
-    fn node_iter(&self) -> Self::NodeIterator {
+    fn node_id_iter(&self) -> Self::NodeIdIterator {
         (0..self.node_len()).map(|id| NodeId::new(id))
     }
 
-    fn edge_iter(&self) -> Self::EdgeIterator {
+    fn edge_id_iter(&self) -> Self::EdgeIdIterator {
         (0..self.edge_len()).map(|id| EdgeId::new(id))
     }
 

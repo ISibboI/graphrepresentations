@@ -3,7 +3,7 @@
 //! This is a compact static graph representation that is often the most efficient solution if updates to the topology are rare.
 
 use crate::{
-    adjacencyarray::iterators::{AdjacencyArrayEdgeIterator, AdjacencyArrayNodeIterator},
+    adjacencyarray::iterators::{AdjacencyArrayEdgeIdIterator, AdjacencyArrayNodeIdIterator},
     graph::{EdgeRef, Graph},
     simplegraph::SimpleGraph,
     util::PrefixSum,
@@ -23,8 +23,8 @@ pub struct AdjacencyArray<N, E> {
 }
 
 impl<N, E> Graph<N, E> for AdjacencyArray<N, E> {
-    type NodeIterator = AdjacencyArrayNodeIterator;
-    type EdgeIterator = AdjacencyArrayEdgeIterator;
+    type NodeIdIterator = AdjacencyArrayNodeIdIterator;
+    type EdgeIdIterator = AdjacencyArrayEdgeIdIterator;
 
     fn node_len(&self) -> IdType {
         (self.first_out.len() - 1)
@@ -38,11 +38,11 @@ impl<N, E> Graph<N, E> for AdjacencyArray<N, E> {
             .unwrap_or_else(|_| panic!("Edge len not compatible with usize"))
     }
 
-    fn node_iter(&self) -> Self::NodeIterator {
+    fn node_id_iter(&self) -> Self::NodeIdIterator {
         (0..self.node_len()).map(|id| NodeId::new(id))
     }
 
-    fn edge_iter(&self) -> Self::EdgeIterator {
+    fn edge_id_iter(&self) -> Self::EdgeIdIterator {
         (0..self.edge_len()).map(|id| EdgeId::new(id))
     }
 
@@ -95,12 +95,12 @@ fn convert_from<N: Clone, E: Default + Clone, G: Graph<N, E>>(source: &G) -> Adj
     let mut first_out = vec![EdgeId::new(0); node_len + 2];
     let mut edge_ends = vec![NodeId::invalid(); edge_len];
     let node_data: Vec<_> = source
-        .node_iter()
+        .node_id_iter()
         .map(|id| source.node_data(id).clone())
         .collect();
     let mut edge_data = vec![E::default(); edge_len];
 
-    for edge in source.edge_iter().map(|id| source.edge(id)) {
+    for edge in source.edge_id_iter().map(|id| source.edge(id)) {
         let count_index: usize = (edge.start().id + 2)
             .try_into()
             .expect("Node id out of bounds");
@@ -110,7 +110,7 @@ fn convert_from<N: Clone, E: Default + Clone, G: Graph<N, E>>(source: &G) -> Adj
 
     first_out.prefix_sum();
 
-    for edge in source.edge_iter().map(|id| source.edge(id)) {
+    for edge in source.edge_id_iter().map(|id| source.edge(id)) {
         let node_index: usize = (edge.start().id + 1)
             .try_into()
             .expect("Node id out of bounds");

@@ -7,10 +7,10 @@ use crate::{EdgeId, IdType, NodeId};
 /// Graphs defining this trait can act as containers for nodes and edges.
 /// Their functionality is very limited though, as not even navigation is defined.
 pub trait Graph<N, E> {
-    /// An iterator over all nodes of a graph.
-    type NodeIterator: Iterator<Item = NodeId>;
-    /// An iterator over all edges of a graph.
-    type EdgeIterator: Iterator<Item = EdgeId>;
+    /// An iterator over all node ids of a graph.
+    type NodeIdIterator: Iterator<Item = NodeId>;
+    /// An iterator over all edge ids of a graph.
+    type EdgeIdIterator: Iterator<Item = EdgeId>;
 
     /// The amount of nodes in the graph.
     fn node_len(&self) -> IdType;
@@ -18,11 +18,11 @@ pub trait Graph<N, E> {
     /// The amount of edges in the graph.
     fn edge_len(&self) -> IdType;
 
-    /// Returns an iterator over all nodes in the graph.
-    fn node_iter(&self) -> Self::NodeIterator;
+    /// Returns an iterator over all node ids in the graph.
+    fn node_id_iter(&self) -> Self::NodeIdIterator;
 
-    /// Returns an iterator over all edges in the graph.
-    fn edge_iter(&self) -> Self::EdgeIterator;
+    /// Returns an iterator over all edge ids in the graph.
+    fn edge_id_iter(&self) -> Self::EdgeIdIterator;
 
     /// Returns a reference to a nodes data, identified by the given id.
     fn node_data(&self, id: NodeId) -> &N;
@@ -45,6 +45,19 @@ pub trait Graph<N, E> {
     /// Returns true if the given `EdgeId` refers to an edge in this graph.
     fn is_edge_id_valid(&self, id: EdgeId) -> bool;
 }
+
+/*pub trait IterableGraph<'a, N, E>: Graph<N, E> {
+    /// An iterator over all nodes of a graph.
+    type NodeIterator: Iterator<Item = (NodeId, Node<N>)>;
+    /// An iterator over all edges of a graph.
+    type EdgeIterator: Iterator<Item = (EdgeId, EdgeRef<'a, E>)>;
+
+    /// Returns an iterator over all nodes in the graph.
+    fn node_iter(&self) -> Self::NodeIterator;
+
+    /// Returns an iterator over all edges in the graph.
+    fn edge_iter(&self) -> Self::EdgeIterator;
+}*/
 
 /// A forward navigable graph.
 ///
@@ -182,5 +195,17 @@ impl<'a, E> EdgeRef<'a, E> {
 impl<'a, E> From<&'a Edge<E>> for EdgeRef<'a, E> {
     fn from(edge: &'a Edge<E>) -> Self {
         EdgeRef::new(edge.start(), edge.end(), edge.data())
+    }
+}
+
+impl<'a, E: Clone> From<&EdgeRef<'a, E>> for Edge<E> {
+    fn from(edge: &EdgeRef<'a, E>) -> Self {
+        Edge::new(edge.start(), edge.end(), edge.data().clone())
+    }
+}
+
+impl<'a, E: Clone> From<EdgeRef<'a, E>> for Edge<E> {
+    fn from(edge: EdgeRef<'a, E>) -> Self {
+        Edge::from(&edge)
     }
 }
