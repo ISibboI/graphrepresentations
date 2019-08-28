@@ -4,6 +4,10 @@
 
 use crate::{graph::Graph, simplegraph::SimpleGraph, util::PrefixSum, EdgeId, NodeId};
 use std::convert::TryInto;
+use crate::graph::EdgeRef;
+use crate::adjacencyarray::iterators::{AdjacencyArrayNodeIterator, AdjacencyArrayEdgeIterator};
+
+pub mod iterators;
 
 /// A graph represented as adjacency array.
 pub struct AdjacencyArray<N, E> {
@@ -11,6 +15,47 @@ pub struct AdjacencyArray<N, E> {
     edge_ends: Vec<NodeId>,
     node_data: Vec<N>,
     edge_data: Vec<E>,
+}
+
+impl<N, E> Graph<N, E> for AdjacencyArray<N, E> {
+    type NodeIterator = AdjacencyArrayNodeIterator;
+    type EdgeIterator = AdjacencyArrayEdgeIterator;
+
+    fn node_len(&self) -> u32 {
+        unimplemented!()
+    }
+
+    fn edge_len(&self) -> u32 {
+        unimplemented!()
+    }
+
+    fn node_iter(&self) -> Self::NodeIterator {
+        unimplemented!()
+    }
+
+    fn edge_iter(&self) -> Self::EdgeIterator {
+        unimplemented!()
+    }
+
+    fn node_data(&self, id: NodeId) -> &N {
+        unimplemented!()
+    }
+
+    fn edge_data(&self, id: EdgeId) -> &E {
+        unimplemented!()
+    }
+
+    fn edge(&self, id: EdgeId) -> EdgeRef<E> {
+        unimplemented!()
+    }
+
+    fn edge_start(&self, id: EdgeId) -> NodeId {
+        unimplemented!()
+    }
+
+    fn edge_end(&self, id: EdgeId) -> NodeId {
+        unimplemented!()
+    }
 }
 
 impl<N: Clone, E: Default + Clone> From<&SimpleGraph<N, E>> for AdjacencyArray<N, E> {

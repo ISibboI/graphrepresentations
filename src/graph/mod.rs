@@ -6,11 +6,11 @@ use crate::{EdgeId, IdType, NodeId};
 ///
 /// Graphs defining this trait can act as containers for nodes and edges.
 /// Their functionality is very limited though, as not even navigation is defined.
-pub trait Graph<'a, N, E> {
+pub trait Graph<N, E> {
     /// An iterator over all nodes of a graph.
-    type NodeIterator: Iterator<Item = NodeId> + 'a;
+    type NodeIterator: Iterator<Item = NodeId>;
     /// An iterator over all edges of a graph.
-    type EdgeIterator: Iterator<Item = EdgeId> + 'a;
+    type EdgeIterator: Iterator<Item = EdgeId>;
 
     /// The amount of nodes in the graph.
     fn node_len(&self) -> IdType;
@@ -31,7 +31,7 @@ pub trait Graph<'a, N, E> {
     fn edge_data(&self, id: EdgeId) -> &E;
 
     /// Returns an edge instance, identified by the given id.
-    fn edge(&self, id: EdgeId) -> EdgeRef<'a, E>;
+    fn edge(&self, id: EdgeId) -> EdgeRef<E>;
 
     /// Returns the start node of the edge identified by the given id.
     fn edge_start(&self, id: EdgeId) -> NodeId;
@@ -44,7 +44,7 @@ pub trait Graph<'a, N, E> {
 ///
 /// Graphs implementing this trait are able to output a nodes out-edges efficiently.
 /// For undirected graphs, out-edges and in-edges are the same.
-pub trait ForwardNavigableGraph<'a, N, E>: Graph<'a, N, E> {
+pub trait ForwardNavigableGraph<'a, N, E>: Graph<N, E> {
     /// An iterator over the out-edges of a node.
     type OutEdgeIterator: Iterator<Item = EdgeId> + 'a;
 
@@ -56,7 +56,7 @@ pub trait ForwardNavigableGraph<'a, N, E>: Graph<'a, N, E> {
 ///
 /// Graphs implementing this trait are able to output a nodes in-edges efficiently.
 /// For undirected graphs, out-edges and in-edges are the same.
-pub trait BackwardNavigableGraph<'a, N, E>: Graph<'a, N, E> {
+pub trait BackwardNavigableGraph<'a, N, E>: Graph<N, E> {
     /// An iterator over the in-edges of a node.
     type InEdgeIterator: Iterator<Item = EdgeId> + 'a;
 
@@ -82,6 +82,7 @@ pub trait MutableGraph<N, E> {
 
 /// An error type for graph modifications.
 /// This type is used by the `MutableGraph` trait.
+#[derive(Debug)]
 pub enum GraphModificationError {
     /// An edge that refers to a nonexistent start node was added to the graph
     StartNodeDoesNotExist,
@@ -107,7 +108,7 @@ pub struct Edge<E> {
 
 /// A container for an edge.
 /// Is returned by `Graph` when a complete edge instance is requested.
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct EdgeRef<'a, E> {
     start: NodeId,
     end: NodeId,

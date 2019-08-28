@@ -17,7 +17,7 @@
 //! let mut simple_graph = SimpleGraph::new();
 //! let n1 = simple_graph.add_node(Node::new(5));
 //! let n2 = simple_graph.add_node(Node::new(7));
-//! let e1 = simple_graph.add_edge(Edge::new(n1, n2, 'c')).unwrap_or_else(|error| panic!("The edge refers nonexistent nodes: {}", error));
+//! let e1 = simple_graph.add_edge(Edge::new(n1, n2, 'c')).unwrap_or_else(|error| panic!("The edge refers nonexistent nodes: {:?}", error));
 //! let adjacency_array = AdjacencyArray::from(&simple_graph);
 //!
 //! let mut node_iter = adjacency_array.node_iter();
@@ -25,7 +25,7 @@
 //! assert_eq!(node_iter.next(), Some(n1)); // The order of the nodes is guaranteed to stay the same
 //! assert_eq!(node_iter.next(), Some(n2));
 //! assert_eq!(node_iter.next(), None);
-//! assert_eq!(edge_iter.next(), Some(simple_graph.edge(e1)));
+//! assert_eq!(adjacency_array.edge(edge_iter.next().expect("Edge was not converted correctly")), simple_graph.edge(e1));
 //! assert_eq!(edge_iter.next(), None);
 //! ```
 
@@ -47,7 +47,7 @@ pub struct SimpleGraph<N, E> {
     edges: Vec<Edge<E>>,
 }
 
-impl<'a, N, E: 'a> Graph<'a, N, E> for SimpleGraph<N, E> {
+impl<N, E> Graph<N, E> for SimpleGraph<N, E> {
     type NodeIterator = SimpleGraphNodeIterator;
     type EdgeIterator = SimpleGraphEdgeIterator;
 
@@ -60,11 +60,11 @@ impl<'a, N, E: 'a> Graph<'a, N, E> for SimpleGraph<N, E> {
     }
 
     fn node_iter(&self) -> Self::NodeIterator {
-        (0..self.node_len().try_into().expect("Node id out of bounds")).map(|id| NodeId::new(id))
+        (0..self.node_len()).map(|id| NodeId::new(id))
     }
 
     fn edge_iter(&self) -> Self::EdgeIterator {
-        unimplemented!()
+        (0..self.edge_len()).map(|id| EdgeId::new(id))
     }
 
     fn node_data(&self, id: NodeId) -> &N {
@@ -75,7 +75,7 @@ impl<'a, N, E: 'a> Graph<'a, N, E> for SimpleGraph<N, E> {
         unimplemented!()
     }
 
-    fn edge(&self, id: EdgeId) -> EdgeRef<'a, E> {
+    fn edge(&self, id: EdgeId) -> EdgeRef<E> {
         unimplemented!()
     }
 
@@ -103,9 +103,9 @@ impl<N, E> MutableGraph<N, E> for SimpleGraph<N, E> {
     }
 
     fn add_edge(&mut self, edge: Edge<E>) -> Result<EdgeId, GraphModificationError> {
-        if edge.start().is_valid() || edge.start().id >= self.node_len() {
+        if !edge.start().is_valid() || edge.start().id >= self.node_len() {
             return Err(GraphModificationError::StartNodeDoesNotExist);
-        } else if edge.end().is_valid() || edge.end().id >= self.node_len() {
+        } else if !edge.end().is_valid() || edge.end().id >= self.node_len() {
             return Err(GraphModificationError::EndNodeDoesNotExist);
         }
 
