@@ -35,6 +35,7 @@ use crate::{
     EdgeId, IdType, NodeId,
 };
 use std::{borrow::Borrow, convert::TryInto};
+use crate::adjacencyarray::AdjacencyArray;
 
 pub mod iterators;
 
@@ -139,5 +140,23 @@ impl<N, E> Default for SimpleGraph<N, E> {
             nodes: Vec::new(),
             edges: Vec::new(),
         }
+    }
+}
+
+fn convert_from<N: Clone, E: Clone, G: Graph<N, E>>(source: &G) -> SimpleGraph<N, E> {
+    let nodes: Vec<_> = source.node_id_iter().map(|id| Node::new(source.node_data(id).clone())).collect();
+    let mut edges = Vec::with_capacity(source.edge_len().try_into().expect("Edge len not supported by usize"));
+
+    for edge_id in source.edge_id_iter() {
+        let edge = source.edge(edge_id);
+        edges.push(edge.into());
+    }
+
+    SimpleGraph {nodes, edges}
+}
+
+impl<N: Clone, E: Clone> From<&AdjacencyArray<N, E>> for SimpleGraph<N, E> {
+    fn from(source: &AdjacencyArray<N, E>) -> Self {
+        convert_from(source)
     }
 }
