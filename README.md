@@ -1,5 +1,9 @@
 # Graph Representations
 
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![](http://meritbadge.herokuapp.com/graphrepresentations)](https://crates.io/crates/graphrepresentations)
+[![](https://docs.rs/graphrepresentations/badge.svg)](https://docs.rs/graphrepresentations)
+
 This crate provides different representations for graphs, some of which are efficient to use,
 and others that are efficient to construct.
 
