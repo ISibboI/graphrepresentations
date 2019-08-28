@@ -6,6 +6,10 @@
 
 ### Added
 
+ * `SimpleGraph` representation
+ * `AdjacencyArray` representation
+ * The possibility to convert from `SimpleGraph` to `AdjacencyArray`
+
 ### Removed
 
 ### Changed
