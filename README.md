@@ -24,13 +24,35 @@ let n2 = simple_graph.add_node(Node::new(7));
 let e1 = simple_graph.add_edge(Edge::new(n1, n2, 'c')).unwrap_or_else(|error| panic!("The edge refers nonexistent nodes: {:?}", error));
 let adjacency_array = AdjacencyArray::from(&simple_graph);
 
-let mut node_iter = adjacency_array.node_iter();
-let mut edge_iter = adjacency_array.edge_iter();
-assert_eq!(node_iter.next(), Some(n1)); // The order of the nodes is guaranteed to stay the same
-assert_eq!(node_iter.next(), Some(n2));
+let mut node_iter = adjacency_array.node_id_iter();
+let mut edge_iter = adjacency_array.edge_id_iter();
+assert_eq!(simple_graph.node_data(node_iter.next().expect("Node got lost")), adjacency_array.node_data(n1)); // The order of the nodes is guaranteed to stay the same
+assert_eq!(simple_graph.node_data(node_iter.next().expect("Node got lost")), adjacency_array.node_data(n2));
 assert_eq!(node_iter.next(), None);
 assert_eq!(adjacency_array.edge(edge_iter.next().expect("Edge was not converted correctly")), simple_graph.edge(e1));
 assert_eq!(edge_iter.next(), None);
 ```
+
+Navigating that same adjacency array.
+
+```rust
+// The same adjacency array as above
+let mut neighbors = adjacency_array.out_edges(n1);
+assert_eq!(adjacency_array.edge(neighbors.next().expect("Edge was not converted correctly")), simple_graph.edge(e1));
+assert_eq!(neighbors.next(), None);
+```
+
+## Ids Explained
+
+This crate uses ids to refer to nodes and edges.
+This comes natural when implementing adjacency arrays or edge lists.
+It is a fast and easy solution to pass around node and edge data in client code without having to worry about borrowing.
+Ids are 32 bit (or maybe also 64 bit in the future), so passing them around is basically zero-cost.
+
+**Keep in mind** that ids are not bound in any way to the graph instance that created them.
+There is no protection against using an id for one graph in another, resulting in unpredictable behavior.
+**But** using the node ids of one graph instance with a converted version of that same graph is guaranteed to work consistently, if none of the graphs were modified after conversion.
+
+##
 
 If you are missing a feature or found a bug, please open an issue on [github](https://github.com/ISibboI/graphrepresentations/issues).
