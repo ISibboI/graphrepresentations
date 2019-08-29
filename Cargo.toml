@@ -4,6 +4,16 @@ version = "0.0.0"
 authors = ["Sebastian Schmidt <isibboi@gmail.com>"]
 edition = "2018"
 
+description = "A crate providing efficient abstract implementations of different graph representations"
+documentation = "https://docs.rs/graphrepresentations"
+repository = "https://github.com/ISibboI/graphrepresentations"
+readme = "README.md"
+keywords = ["data structure", "graph representation", "adjacency array", "efficient", "abstract"]
+categories = ["data-structures", "science"]
+license = "MIT"
+license-file = "LICENSE"
+maintenance = { status = "actively-developed" }
+
 [lib]
 path = "src/lib.rs"
 
