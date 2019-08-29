@@ -42,6 +42,19 @@ assert_eq!(adjacency_array.edge(neighbors.next().expect("Edge was not converted 
 assert_eq!(neighbors.next(), None);
 ```
 
+## Graph Traits
+
+ * `Graph` The basic trait for graphs.
+   It cannot do much more than acting as an unmodifiable container.
+   Supported are iteration of node and edge ids and lookup of node and edge data by id.
+ * `MutableGraph` A trait for mutable graphs.
+   Graphs implementing this trait are supposed to allow efficient mutations.
+   At the moment, the trait only requires `add`-methods.
+ * `ForwardNavigableGraph` A graph that can be navigated forward.
+   It requires the method `out_edges` that returns an iterator over all out-edges of a node.
+ * `IterableGraph` A graph that supports efficient iteration of complete node and edge data.
+   This is not implemented and blocked by [#29661](https://github.com/rust-lang/rust/issues/29661).
+
 ## Ids Explained
 
 This crate uses ids to refer to nodes and edges.
