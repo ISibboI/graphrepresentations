@@ -54,6 +54,15 @@ assert_eq!(neighbors.next(), None);
    It requires the method `out_edges` that returns an iterator over all out-edges of a node.
  * `IterableGraph` A graph that supports efficient iteration of complete node and edge data.
    This is not implemented and blocked by [#29661](https://github.com/rust-lang/rust/issues/29661).
+   
+## Graph Representations
+
+At the moment, this crate supports only two graph representations.
+One dynamic, and one static.
+
+ * `SimpleGraph: Graph + MutableGraph` A dynamic graph representation, that allows efficient modification, but is not very useful to implement any algorithms.
+ * `AdjacencyArray: Graph + ForwardNavigableGraph` A static graph representation that is efficient to use in graph algorithms, but inefficient to modify.
+   At the moment, modification needs to be done by rebuilding it from a `SimpleGraph`. 
 
 ## Ids Explained
 
