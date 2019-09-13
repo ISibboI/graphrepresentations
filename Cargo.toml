@@ -11,7 +11,8 @@ readme = "README.md"
 keywords = ["graph", "representation", "adjacency", "efficient", "abstract"]
 categories = ["data-structures", "science"]
 license = "MIT"
-license-file = "LICENSE"
+
+[badges]
 maintenance = { status = "actively-developed" }
 
 [lib]
